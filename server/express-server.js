@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var fs = require('fs');
 
+var port = process.env.PORT || 8080;
 var clientDirname = '/app/client';
 var serverDirname = '/app/server';
 
@@ -53,7 +54,7 @@ app.options('/classes/messages', function (req, res) {
   res.send('options allowed');
 });
 
-app.listen(3000, function () {
+app.listen(port, function () {
   console.log('Example app listening on port 80!');
 });
 
