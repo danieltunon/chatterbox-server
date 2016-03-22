@@ -1,13 +1,14 @@
 var fs = require('fs');
 var path = require('path');
 
+
 var requestHandler = function(request, response) {
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
   // The outgoing status.
   var statusCode = 200;
   var headers = defaultCorsHeaders;
-  var dirname = '/Users/student/Codes/2016-02-chatterbox-server/client';
+  var dirname = '/Users/danny/Programming/HackReactor/chatterbox-server/client/';
 
   // gross floating storage object
   global.storage = global.storage || { results: [ { objectId: 1, username: 'danny', message: 'poo' }, { objectId: 2, username: 'skye', message: 'hai' } ] };
@@ -16,52 +17,52 @@ var requestHandler = function(request, response) {
     if (request.url === '/' || /\?username=.*/.test(request.url)) {
       headers['Content-Type'] = 'text/html';
 
-      fs.readFile('/Users/student/Codes/2016-02-chatterbox-server/client/refactor.html', 'UTF-8', function(err, data) {
+      fs.readFile(dirname + 'refactor.html', 'utf8', function(err, data) {
         if (err) {
           throw err;
         }
-        console.log(data);
         response.writeHead(statusCode, headers);
         response.end(data);
       });
+
 
     } else if (/css$/.test(request.url)) {
 
       headers['Content-Type'] = 'text/css';
       response.writeHead(statusCode, headers);
-      fs.createReadStream(dirname + request.url, 'UTF-8').pipe(response);
+      fs.createReadStream(dirname + request.url, 'utf8').pipe(response);
 
-    } else if (/jquery\.js$/.test(request.url)) { 
+    } else if (/jquery\.js$/.test(request.url)) {
       headers['Content-Type'] = 'text/javascript';
       response.writeHead(statusCode, headers);
-      var stream = fs.createReadStream(dirname + request.url, 'UTF-8');
+      var stream = fs.createReadStream(dirname + request.url, 'utf8');
       stream.pipe(response);
 
-    } else if (/underscore\.js$/.test(request.url)) { 
+    } else if (/underscore\.js$/.test(request.url)) {
       headers['Content-Type'] = 'text/javascript';
       response.writeHead(statusCode, headers);
-      var stream = fs.createReadStream(dirname + request.url, 'UTF-8');
+      var stream = fs.createReadStream(dirname + request.url, 'utf8');
       stream.pipe(response);
 
-    } else if (/example\.js$/.test(request.url)) { 
+    } else if (/example\.js$/.test(request.url)) {
       headers['Content-Type'] = 'text/javascript';
       response.writeHead(statusCode, headers);
-      var stream = fs.createReadStream(dirname + request.url, 'UTF-8');
-      stream.pipe(response);
-    
-    } else if (/backbone\.js$/.test(request.url)) { 
-      headers['Content-Type'] = 'text/javascript';
-      response.writeHead(statusCode, headers);
-      var stream = fs.createReadStream(dirname + request.url, 'UTF-8');
+      var stream = fs.createReadStream(dirname + request.url, 'utf8');
       stream.pipe(response);
 
-    } else if (/refactor\.js$/.test(request.url)) {   
+    } else if (/backbone\.js$/.test(request.url)) {
       headers['Content-Type'] = 'text/javascript';
       response.writeHead(statusCode, headers);
-      var stream = fs.createReadStream(dirname + request.url, 'UTF-8');
+      var stream = fs.createReadStream(dirname + request.url, 'utf8');
       stream.pipe(response);
 
-    } else if (/46\.gif$/.test(request.url)) {   
+    } else if (/refactor\.js$/.test(request.url)) {
+      headers['Content-Type'] = 'text/javascript';
+      response.writeHead(statusCode, headers);
+      var stream = fs.createReadStream(dirname + request.url, 'utf8');
+      stream.pipe(response);
+
+    } else if (/46\.gif$/.test(request.url)) {
       headers['Content-Type'] = 'image/gif';
       response.writeHead(statusCode, headers);
       var stream = fs.createReadStream(dirname + request.url);
@@ -72,8 +73,9 @@ var requestHandler = function(request, response) {
 
       headers['Content-Type'] = 'text/json';
       response.writeHead(statusCode, headers);
-      response.end(JSON.stringify(storage));     // TODO: replace with fs.readFile(data.json)
-
+      fs.readFile('/Users/danny/Programming/HackReactor/chatterbox-server/server/data/data.json', 'utf8', function(err, data) {
+        response.end(data.trim());     // TODO: replace with fs.readFile(data.json)
+      });
     } else if (request.url === '/classes/rooms') {
       console.log('...getting rooms');
 
@@ -98,12 +100,13 @@ var requestHandler = function(request, response) {
 
       request.on('end', function() {
         var storedMessages;
-        fs.readFile('/Users/student/Codes/2016-02-chatterbox-server/server/data/data.json', 'UTF-8', function(err, data) {
-          console.log(data);
-          // storedMessages = JSON.parse(data);
-          storedMessages.unshift(incomingMessage);
+        fs.readFile('/Users/danny/Programming/HackReactor/chatterbox-server/server/data/data.json', 'utf8', function(err, data) {
 
-          fs.writeFile('/Users/student/Codes/2016-02-chatterbox-server/server/data/data.json', 'UTF-8', JSON.stringify(storedMessages), function(err) {
+          storedMessages = JSON.parse(data.trim());
+          storedMessages.results.unshift(JSON.parse(incomingMessage.trim()));
+          response.end(JSON.stringify(storedMessages));
+
+          fs.writeFile('/Users/danny/Programming/HackReactor/chatterbox-server/server/data/data.json', JSON.stringify(storedMessages), 'utf8', function(err) {
             if (err) {
               throw err;
             }
@@ -111,8 +114,7 @@ var requestHandler = function(request, response) {
           });
         });
 
-
-        response.end(JSON.stringify(storedMessages));
+        // storage.results.unshift(JSON.parse(incomingMessage));
       });
 
     } else if (request.url === '/classes/rooms') {
@@ -129,6 +131,10 @@ var requestHandler = function(request, response) {
     }
   } else if (request.method === 'OPTIONS') {
     // OPTIONS response
+    headers['Content-Type'] = 'text/plain';
+    headers['Allow'] = 'GET,POST,OPTIONS';
+    response.writeHead(statusCode, headers);
+    response.end();
 
   } else {
     // error
