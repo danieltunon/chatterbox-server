@@ -2,8 +2,8 @@ var express = require('express');
 var app = express();
 var fs = require('fs');
 
-var clientDirname = __dirname + '/client';
-var serverDirname = __dirname;
+var clientDirname = '/app/client';
+var serverDirname = '/app/server';
 
 var headers = {
   'access-control-allow-origin': '*',
