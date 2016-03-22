@@ -1,3 +1,5 @@
+/*eslint no-unused-vars: 0*/
+/*global Backbone*/
 /////////////////////////////////////////////////////////////////////////////
 // Backbone-based Implementation of (minimal) chatterbox client
 /////////////////////////////////////////////////////////////////////////////
@@ -26,6 +28,24 @@ var Messages = Backbone.Collection.extend({
     }
     return results;
   }
+
+});
+
+var Room = Backbone.Model.extend({
+  url: 'http://127.0.0.1:3000/classes/rooms',
+  defaults: {
+    roomname: ''
+  }
+
+});
+
+var Rooms = Backbone.Collection.extend({
+  model: Room,
+  url: 'http://127.0.0.1:3000/classes/rooms'
+
+});
+
+var RoomView = Backbone.View.extend({
 
 });
 
