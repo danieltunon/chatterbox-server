@@ -1,6 +1,4 @@
 var fs = require('fs');
-var path = require('path');
-
 
 var requestHandler = function(request, response) {
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
@@ -9,6 +7,7 @@ var requestHandler = function(request, response) {
   var statusCode = 200;
   var headers = defaultCorsHeaders;
   var dirname = '/Users/danny/Programming/HackReactor/chatterbox-server/client/';
+  var stream;
 
   // gross floating storage object
   global.storage = global.storage || { results: [ { objectId: 1, username: 'danny', message: 'poo' }, { objectId: 2, username: 'skye', message: 'hai' } ] };
@@ -35,37 +34,37 @@ var requestHandler = function(request, response) {
     } else if (/jquery\.js$/.test(request.url)) {
       headers['Content-Type'] = 'text/javascript';
       response.writeHead(statusCode, headers);
-      var stream = fs.createReadStream(dirname + request.url, 'utf8');
+      stream = fs.createReadStream(dirname + request.url, 'utf8');
       stream.pipe(response);
 
     } else if (/underscore\.js$/.test(request.url)) {
       headers['Content-Type'] = 'text/javascript';
       response.writeHead(statusCode, headers);
-      var stream = fs.createReadStream(dirname + request.url, 'utf8');
+      stream = fs.createReadStream(dirname + request.url, 'utf8');
       stream.pipe(response);
 
     } else if (/example\.js$/.test(request.url)) {
       headers['Content-Type'] = 'text/javascript';
       response.writeHead(statusCode, headers);
-      var stream = fs.createReadStream(dirname + request.url, 'utf8');
+      stream = fs.createReadStream(dirname + request.url, 'utf8');
       stream.pipe(response);
 
     } else if (/backbone\.js$/.test(request.url)) {
       headers['Content-Type'] = 'text/javascript';
       response.writeHead(statusCode, headers);
-      var stream = fs.createReadStream(dirname + request.url, 'utf8');
+      stream = fs.createReadStream(dirname + request.url, 'utf8');
       stream.pipe(response);
 
     } else if (/refactor\.js$/.test(request.url)) {
       headers['Content-Type'] = 'text/javascript';
       response.writeHead(statusCode, headers);
-      var stream = fs.createReadStream(dirname + request.url, 'utf8');
+      stream = fs.createReadStream(dirname + request.url, 'utf8');
       stream.pipe(response);
 
     } else if (/46\.gif$/.test(request.url)) {
       headers['Content-Type'] = 'image/gif';
       response.writeHead(statusCode, headers);
-      var stream = fs.createReadStream(dirname + request.url);
+      stream = fs.createReadStream(dirname + request.url);
       stream.pipe(response);
 
     } else if (request.url === '/classes/messages') {
@@ -81,7 +80,7 @@ var requestHandler = function(request, response) {
 
       headers['Content-Type'] = 'text/json';
       response.writeHead(statusCode, headers);
-      response.end(someData);
+      response.end(/*someData*/);
     } else {
       headers['Content-Type'] = 'text/plain';
       response.writeHead(404, headers);
@@ -123,7 +122,7 @@ var requestHandler = function(request, response) {
       headers['Content-Type'] = 'text/json';
       response.writeHead(statusCode, headers);
       // response will be entire storage object
-      response.end(someData);
+      response.end(/*someData*/);
     } else {
       headers['Content-Type'] = 'text/plain';
       response.writeHead(404, headers);
