@@ -2,8 +2,8 @@ var express = require('express');
 var app = express();
 var fs = require('fs');
 
-var clientDirname = '/Users/student/Codes/chatterbox-server/client';
-var serverDirname = '/Users/student/Codes/chatterbox-server/server';
+var clientDirname = __dirname + '/client';
+var serverDirname = __dirname;
 
 var headers = {
   'access-control-allow-origin': '*',
@@ -53,7 +53,7 @@ app.options('/classes/messages', function (req, res) {
   res.send('options allowed');
 });
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+app.listen(80, function () {
+  console.log('Example app listening on port 80!');
 });
 
