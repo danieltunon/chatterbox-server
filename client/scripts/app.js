@@ -3,7 +3,7 @@ var app = {
 
   //TODO: The current 'addFriend' function just adds the class 'friend'
   //to all messages sent by the user
-  server: 'boiling-tor-59690.herokuapp.com/classes/messages',
+  server: 'https://boiling-tor-59690.herokuapp.com/classes/messages',
   username: 'anonymous',
   roomname: 'lobby',
   lastMessageId: 0,
