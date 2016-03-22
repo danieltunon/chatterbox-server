@@ -25,17 +25,6 @@ var requestHandler = function(request, response) {
         response.end(data);
       });
 
-// Serving request type GET for url /styles/styles.css
-// Serving request type GET for url /bower_components/jquery/dist/jquery.js
-// Serving request type GET for url /bower_components/underscore/underscore.js
-// Serving request type GET for url /bower_components/backbone/backbone.js
-// Serving request type GET for url /env/config.example.js
-// Serving request type GET for url /scripts/refactor.js
-// Serving request type GET for url /images/spiffygif_46x46.gif
-
-
-
-
     } else if (/css$/.test(request.url)) {
 
       headers['Content-Type'] = 'text/css';
@@ -83,7 +72,7 @@ var requestHandler = function(request, response) {
 
       headers['Content-Type'] = 'text/json';
       response.writeHead(statusCode, headers);
-      response.end(JSON.stringify(storage));
+      response.end(JSON.stringify(storage));     // TODO: replace with fs.readFile(data.json)
 
     } else if (request.url === '/classes/rooms') {
       console.log('...getting rooms');
@@ -108,9 +97,22 @@ var requestHandler = function(request, response) {
       });
 
       request.on('end', function() {
-        storage.results.unshift(JSON.parse(incomingMessage));
-        console.log(JSON.stringify(storage));
-        response.end(JSON.stringify(storage));
+        var storedMessages;
+        fs.readFile('/Users/student/Codes/2016-02-chatterbox-server/server/data/data.json', 'UTF-8', function(err, data) {
+          console.log(data);
+          // storedMessages = JSON.parse(data);
+          storedMessages.unshift(incomingMessage);
+
+          fs.writeFile('/Users/student/Codes/2016-02-chatterbox-server/server/data/data.json', 'UTF-8', JSON.stringify(storedMessages), function(err) {
+            if (err) {
+              throw err;
+            }
+            console.log('It\'s saved!');
+          });
+        });
+
+
+        response.end(JSON.stringify(storedMessages));
       });
 
     } else if (request.url === '/classes/rooms') {
