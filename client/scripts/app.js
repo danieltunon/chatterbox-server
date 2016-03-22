@@ -67,17 +67,18 @@ var app = {
         var mostRecentMessage = data.results[data.results.length - 1];
         var displayedRoom = $('.chat span').first().data('roomname');
         app.stopSpinner();
+        console.log(app.roomname, displayedRoom);
         // Only bother updating the DOM if we have a new message
-        if (mostRecentMessage.objectId !== app.lastMessageId || app.roomname !== displayedRoom) {
+        if (app.roomname !== displayedRoom) { //mostRecentMessage.objectId !== app.lastMessageId || 
           // Update the UI with the fetched rooms
           app.populateRooms(data.results);
 
-          // Update the UI with the fetched messages
-          app.populateMessages(data.results, animate);
-
           // Store the ID of the most recent message
-          app.lastMessageId = mostRecentMessage.objectId;
+          // app.lastMessageId = mostRecentMessage.objectId;
         }
+
+          // Update the UI with the fetched messages
+        app.populateMessages(data.results, animate);
       },
       error: function(data) {
         console.error('chatterbox: Failed to fetch messages');
@@ -111,7 +112,7 @@ var app = {
   },
 
   populateRooms: function(results) {
-    app.$roomSelect.html('<option value="__newRoom">New room...</option><option value="" selected>Lobby</option></select>');
+    app.$roomSelect.html('<option value="__newRoom">New room...</option></select>');
 
     if (results) {
       var rooms = {};
@@ -234,3 +235,4 @@ var app = {
   }
 };
 
+window.app = app;

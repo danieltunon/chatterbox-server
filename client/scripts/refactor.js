@@ -8,7 +8,8 @@ var Message = Backbone.Model.extend({
   url: 'http://127.0.0.1:3000/classes/messages',
   defaults: {
     username: '',
-    message: ''
+    message: '',
+    roomname: ''
   }
 });
 
@@ -41,12 +42,44 @@ var Room = Backbone.Model.extend({
 
 var Rooms = Backbone.Collection.extend({
   model: Room,
-  url: 'http://127.0.0.1:3000/classes/rooms'
+  url: 'http://127.0.0.1:3000/classes/rooms',
+
+  loadRooms: function() {
+    this.fetch();
+  },
+
+  parse: function(response, options) {
+    var results = [];
+    for (var i = response.results.length - 1; i >= 0; i--) {
+      results.push(response.results[i]);
+    }
+    return results;
+  }
 
 });
 
 var RoomView = Backbone.View.extend({
+  template: _.template('<option value=<%- roomname %>><%- roomname %></option>'),
+  render: function() {
+    this.$el.html(this.template(this.model.attributes));
+    return this.$el;
+  }
+});
 
+var RoomsView = Backbone.View.extend({
+  initialize: function() {
+    this.collection.on('sync', this.render, this);
+  },
+
+  render: function() {
+    this.$el.html('<option value="__newRoom">New room...</option>');
+    this.collection.forEach(this.renderRoom, this);
+  },
+
+  renderRoom: function(message) {
+    var roomView = new RoomView({model: room});
+    this.$el.append(roomView.render());
+  }
 });
 
 var FormView = Backbone.View.extend({
@@ -66,20 +99,17 @@ var FormView = Backbone.View.extend({
 
     var $text = this.$('#message');
 
-    // original version
     this.collection.create({
       username: window.location.search.substr(10),
-      message: $text.val()
+      message: $text.val(),
+      roomname: /*get current roomname*/0
     });
 
-    // our version using fetch
-    // var newInput = new Message({ username: window.location.search.substr(10), message: $text.val() });
-    // console.dir(newInput.attributes.username);
-    // this.collection.fetch({
-    //   type: 'POST',
-    //   data: JSON.stringify({ username: newInput.attributes.username, message: newInput.attributes.message })
-    // });
     $text.val('');
+  },
+
+  handleRoomChange: function(e) {
+
   },
 
 
@@ -102,9 +132,9 @@ var MessageView = Backbone.View.extend({
   },
 
   template: _.template('<div class="chat"> \
-                          <div class="user"><%- username %></div> \
-                          <div class="text"><%- message %></div> \
-                        </div>'),
+    <div class="user"><%- username %></div> \
+    <div class="text"><%- message %></div> \
+    </div>'),
 
   render: function() {
     this.$el.html(this.template(this.model.attributes));
