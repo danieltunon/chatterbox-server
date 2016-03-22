@@ -53,7 +53,7 @@ app.options('/classes/messages', function (req, res) {
   res.send('options allowed');
 });
 
-app.listen(80, function () {
+app.listen(3000, function () {
   console.log('Example app listening on port 80!');
 });
 
