@@ -1,12 +1,12 @@
 {
   "name": "chatterbox",
   "version": "0.0.1",
-  "main": "server/basic-server.js",
+  "main": "server/express-server.js",
   "author": "Hack Reactor",
   "license": "Copyright 2013, Hack Reactor. All rights reserved.",
   "scripts": {
     "start": "node server/express-server.js",
-    "test": "mocha server/spec"
+    "postinstall": "bower install"
   },
   "devDependencies": {
     "chai": "^1.9.0",
