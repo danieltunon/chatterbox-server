@@ -46,12 +46,19 @@ var FormView = Backbone.View.extend({
 
     var $text = this.$('#message');
 
-    var newInput = new Message({ username: window.location.search.substr(10), message: $text.val() });
-    console.dir(newInput.attributes.username);
-    this.collection.fetch({
-      type: 'POST',
-      data: JSON.stringify({ username: newInput.attributes.username, message: newInput.attributes.message })
+    // original version
+    this.collection.create({
+      username: window.location.search.substr(10),
+      message: $text.val()
     });
+
+    // our version using fetch
+    // var newInput = new Message({ username: window.location.search.substr(10), message: $text.val() });
+    // console.dir(newInput.attributes.username);
+    // this.collection.fetch({
+    //   type: 'POST',
+    //   data: JSON.stringify({ username: newInput.attributes.username, message: newInput.attributes.message })
+    // });
     $text.val('');
   },
 
