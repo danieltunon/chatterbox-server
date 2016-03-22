@@ -1,0 +1,32 @@
+{
+  "name": "2016-02-chatterbox-server",
+  "version": "0.0.0",
+  "homepage": "https://github.com/swfree/2016-02-chatterbox-server",
+  "authors": [
+    "Hack Reactor Students <accounts@hackreactor.com>"
+  ],
+  "description": "node sprint",
+  "main": "client/refactor.html",
+  "moduleType": [
+    "es6",
+    "node"
+  ],
+  "keywords": [
+    "fun",
+    "happy",
+    "server"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "client/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.2.2",
+    "backbone": "~1.3.2"
+  }
+}
