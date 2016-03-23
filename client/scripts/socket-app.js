@@ -3,14 +3,17 @@ var app = {
   //TODO: The current 'addFriend' function just adds the class 'friend'
   //to all messages sent by the user
   server: window.location.origin + '/classes/messages',
-  socket: io(),
+  socket: io.connect(window.location.origin),
   username: 'anonymous',
   roomname: 'lobby',
   lastMessageId: 0,
-  friends: {},
 
   init: function() {
-    // Get username
+    app.socket.on('send chats', function (data) {
+      app.startSpinner();
+      app.renderChat(data);
+    });
+
     app.username = window.location.search.substr(10);
 
     // Cache jQuery selectors
@@ -21,74 +24,28 @@ var app = {
     app.$send = $('#send');
 
     // Add listeners
-    app.$chats.on('click', '.username', app.addFriend);
     app.$send.on('submit', app.handleSubmit);
     app.$roomSelect.on('change', app.saveRoom);
-
-    // Fetch previous messages
-    app.startSpinner();
-    app.fetch(false);
-
-    // Poll for new messages
-    setInterval(app.fetch, 3000);
   },
 
-  send: function(data) {
-    app.startSpinner();
-    // Clear messages input
-    app.$message.val('');
+  renderChat: function(data) {
+    if (!data.results || !data.results.length) { return; }
 
-    // POST the message to the server
-    $.ajax({
-      url: app.server,
-      type: 'POST',
-      data: JSON.stringify(data),
-      contentType: 'application/json',
-      success: function (data) {
-        // Trigger a fetch to update the messages, pass true to animate
-        app.fetch();
-      },
-      error: function (data) {
-        console.error('chatterbox: Failed to send message', data);
-      }
-    });
-  },
-
-  fetch: function(animate) {
-    $.ajax({
-      url: app.server,
-      type: 'GET',
-      contentType: 'application/json',
-      success: function(data) {
-        // Don't bother if we have nothing to work with
-        if (!data.results || !data.results.length) { return; }
-
-        // Get the last message
-        var mostRecentMessage = data.results[data.results.length - 1];
-        var displayedRoom = $('.chat span').first().data('roomname');
-        app.stopSpinner();
-        // Only bother updating the DOM if we have a new message
-        if (app.roomname !== displayedRoom) { //mostRecentMessage.objectId !== app.lastMessageId || 
-          // Update the UI with the fetched rooms
-          app.populateRooms(data.results);
-
-          // Store the ID of the most recent message
-          // app.lastMessageId = mostRecentMessage.objectId;
-        }
-
-          // Update the UI with the fetched messages
-        app.populateMessages(data.results, animate);
-      },
-      error: function(data) {
-        console.error('chatterbox: Failed to fetch messages');
-      }
-    });
+    var mostRecentMessage = data.results[data.results.length - 1];
+    var displayedRoom = $('.chat span').first().data('roomname');
+    
+    app.stopSpinner();
+    
+    if (app.roomname !== displayedRoom) { 
+      app.populateRooms(data.results);
+    }
+    app.populateMessages(data.results);
   },
 
   clearMessages: function() {
     app.$chats.html('');
   },
-
+  
   populateMessages: function(results, animate) {
     // Clear existing messages
 
@@ -154,30 +111,11 @@ var app = {
       var $username = $('<span class="username"/>');
       $username.text(data.username + ': ').attr('data-username', data.username).attr('data-roomname', data.roomname).appendTo($chat);
 
-      // Add the friend class
-      if (app.friends[data.username] === true) {
-        $username.addClass('friend');
-      }
-
       var $message = $('<br><span/>');
       $message.text(data.text).appendTo($chat);
 
       // Add the message to the UI
       app.$chats.append($chat);
-    }
-  },
-
-  addFriend: function(evt) {
-    var username = $(evt.currentTarget).attr('data-username');
-
-    if (username !== undefined) {
-      // Store as a friend
-      app.friends[username] = true;
-
-      // Bold all previous messages
-      // Escape the username in case it contains a quote
-      var selector = '[data-username="' + username.replace(/"/g, '\\\"') + '"]';
-      var $usernames = $(selector).addClass('friend');
     }
   },
 
@@ -217,7 +155,7 @@ var app = {
       roomname: app.roomname || 'lobby'
     };
 
-    app.send(message);
+    app.socket.emit('submit', message);
 
     // Stop the form from submitting
     evt.preventDefault();

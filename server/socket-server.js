@@ -1,11 +1,12 @@
 var express = require('express');
 var app = express();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 var fs = require('fs');
-var io = require('socket.io')(app);
 
-var port = process.env.PORT || 8080;
-var clientDirname = '/app/client';
-var serverDirname = '/app/server';
+var port = 3000 || process.env.PORT || 8080;
+var clientDirname = '/Users/student/Codes/chatterbox-server-liberated/client';
+var serverDirname = '/Users/student/Codes/chatterbox-server-liberated/server';
 
 var headers = {
   'access-control-allow-origin': '*',
@@ -21,24 +22,18 @@ app.use(function(req, res, next) {
 
 app.use(express.static(clientDirname));
 
-app.get('/classes/messages', function (req, res) {
-  fs.readFile(serverDirname + '/data/data.json', 'utf8', function(err, data) {
-    res.status(200).json(JSON.parse(data));
-  });
-});
+io.on('connection', function(socket) {
 
-app.post('/classes/messages', function (req, res) {
-  var incomingMessage = '';
-  req.on('data', function(chunk) {
-    incomingMessage += chunk;
+  fs.readFile(serverDirname + '/data/data.json', 'utf8', function(err, data) {
+    io.emit('send chats', JSON.parse(data.trim()));
   });
-  req.on('end', function() {
+
+  socket.on('submit', function(message) {
     var storedMessages;
     fs.readFile(serverDirname + '/data/data.json', 'utf8', function(err, data) {
       storedMessages = JSON.parse(data.trim());
-      storedMessages.results.unshift(JSON.parse(incomingMessage.trim()));
-      res.json(storedMessages);
-
+      storedMessages.results.unshift(message);
+      io.emit('send chats', storedMessages);
       fs.writeFile(serverDirname + '/data/data.json', JSON.stringify(storedMessages), 'utf8', function(err) {
         if (err) {
           throw err;
@@ -47,6 +42,7 @@ app.post('/classes/messages', function (req, res) {
       });
     });
   });
+
 });
 
 app.options('/classes/messages', function (req, res) {
@@ -55,7 +51,7 @@ app.options('/classes/messages', function (req, res) {
   res.send('options allowed');
 });
 
-app.listen(port, function () {
-  console.log('Example app listening on port:' + port);
+server.listen(port, function () {
+  console.log('Example socket server listening on port:' + port);
 });
 
