@@ -55,6 +55,6 @@ app.options('/classes/messages', function (req, res) {
 });
 
 app.listen(port, function () {
-  console.log('Example app listening on port 80!');
+  console.log('Example app listening on port:' + port);
 });
 

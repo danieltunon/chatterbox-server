@@ -3,7 +3,7 @@ var app = {
 
   //TODO: The current 'addFriend' function just adds the class 'friend'
   //to all messages sent by the user
-  server: 'https://boiling-tor-59690.herokuapp.com/classes/messages',
+  server: window.location.origin + '/classes/messages',
   username: 'anonymous',
   roomname: 'lobby',
   lastMessageId: 0,
@@ -67,7 +67,6 @@ var app = {
         var mostRecentMessage = data.results[data.results.length - 1];
         var displayedRoom = $('.chat span').first().data('roomname');
         app.stopSpinner();
-        console.log(app.roomname, displayedRoom);
         // Only bother updating the DOM if we have a new message
         if (app.roomname !== displayedRoom) { //mostRecentMessage.objectId !== app.lastMessageId || 
           // Update the UI with the fetched rooms
